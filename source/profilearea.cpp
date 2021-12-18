@@ -43,24 +43,7 @@ void ProfileArea::makeDefaults()
 
 ProfileFrame* ProfileArea::newProfile(const QString &name)
 {
-    int dupeCount = 1; // start at 1 so duplicates are renamed starting at 2
-    bool dupeExists = false;
-    QString modifiedName = name;
-    do
-    {
-        dupeExists = false;
-        for (ProfileFrame *pf : list) {
-            if (pf->name == modifiedName)
-            {
-                dupeExists = true;
-                dupeCount++;
-            }
-        }
-        if (dupeExists)
-            modifiedName = name + "-" + QString::number(dupeCount);
-    }
-    while (dupeExists);
-    ProfileFrame *f = new ProfileFrame(modifiedName, midiHandler, frameInner);
+    ProfileFrame *f = new ProfileFrame(name, midiHandler, frameInner);
     connect(f->button, &QPushButton::clicked, [=](){ setActive(f); });
     connect(f, &ProfileFrame::deleteClicked, [=](){
         deletionCandidate = f;
@@ -77,8 +60,10 @@ void ProfileArea::write()
     if (profileFile.open(QFile::WriteOnly))
     {
         QJsonObject json;
+        int index = 0;
         for (ProfileFrame *pf : list) {
-            json[pf->profile->name] = pf->profile->getJson();
+            json[QString::number(index)] = pf->profile->getJson();
+            index++;
         }
         profileFile.resize(0);
         profileFile.write(QJsonDocument(json).toJson());
@@ -98,12 +83,16 @@ void ProfileArea::read()
         QJsonDocument jsonDocument = QJsonDocument::fromJson(profileFile.readAll());
         profileFile.close();
         QJsonObject json = jsonDocument.object();
-
-        for (QString name : json.keys()) {
-            ProfileFrame *pf = newProfile(name);
-            pf->profile->fromJson(json[name].toObject());
-            pf->button->setText(name);
-            pf->profile->name = name;
+        QVector<QJsonObject> orderedProfiles{};
+        for (QString id : json.keys())
+        {
+            orderedProfiles.insert(id.toInt(), json[id].toObject());
+        }
+        for (QJsonObject p : orderedProfiles)
+        {
+            ProfileFrame *pf = newProfile(p["name"].toString());
+            pf->profile->fromJson(p);
+            pf->button->setText(pf->profile->name);
             if (pf->profile->active) setActive(pf);
         }
     }

@@ -15,6 +15,7 @@ QJsonObject Profile::getJson()
     QVector<QVariant> values;
 
     QJsonObject profileJson;
+    profileJson["name"] = name;
     profileJson["active"] = active;
     profileJson["windowTitle"] = windowTitle;
     QJsonObject acts;
