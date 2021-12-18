@@ -34,13 +34,13 @@ void MidiWindow::show(Action *a)
     action = a;
     midiHandler = action->midiHandler;
     loadActionIntoUI(a);
+    endMIDIDetect();
+    endCustomMIDIDetect();
     window->show();
 }
 
 void MidiWindow::hide()
 {
-    endMIDIDetect();
-    endCustomMIDIDetect();
     window->hide();
 }
 
