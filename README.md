@@ -14,9 +14,7 @@ MidiMutt is a Windows utility for converting MIDI input events into simulated ke
 - Restrict output unless a specific window is in focus
 - Run shell commands
 
-# Screenshots
 ![Screenshot of the MidiMutt window](https://i.imgur.com/BqFLRVH.png)
-![Screenshot of MidiMutt's input settings](https://i.imgur.com/HWMFYoe.png)
 
 # Installation
 Downloaded the [latest release](https://www.github.com/Squawks/MidiMutt/releases), unzip it anywhere, and run MidiMutt.exe.
