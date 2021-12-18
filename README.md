@@ -7,9 +7,10 @@
 MidiMutt is a Windows utility for converting MIDI input events into simulated keystrokes, mouse events, and scriptable macros with Lua integration. It is compatible with all devices that implement the MIDI standard.
 
 # Features
+- Drop-dead simple to use
 - Simulate all forms of keyboard and mouse input - supports 3 different key simulation APIs
-- Trigger actions based on velocity, including options for modulus (spacing) and sign
 - Flexible repeat modes (*n* times, until Note_Off, until arbitrary MIDI signal)
+- Trigger actions based on velocity, including options for modulus (spacing) and sign
 - Write Lua scripts directly in the program or load from a file
 - Restrict output unless a specific window is in focus
 - Run shell commands
