@@ -41,11 +41,11 @@ void Action::execute()
 void Action::onMIDIInput(unsigned int type, unsigned int channel, unsigned int note, unsigned int velocity)
 {    
     lastMsg = MidiMessage(type, channel, note, velocity);
-    if (repeatMode == RepeatMode::UntilNOTE_OFF)
+    if (repeatMode == RepeatMode::UntilNOTE_OFF && !stopRepeating)
     {
         stopRepeating = type == midiHandler->msgMap.key("NOTE_OFF") && note == midiEventTrigger.value("note", 0);
     }
-    else if (repeatMode == RepeatMode::UntilMidiSignal)
+    else if (repeatMode == RepeatMode::UntilMidiSignal && !stopRepeating)
     {
         stopRepeating = repeatEndTrigger["note"] == note && repeatEndTrigger["type"] == type;
     }
