@@ -1,11 +1,13 @@
 #ifndef SCRIPTACTION_H
 #define SCRIPTACTION_H
+#define SOL_ALL_SAFETIES_ON 1
 
 #include <QObject>
 #include <QVector>
 #include <QMap>
 #include <QFile>
 #include <QTimer>
+#include <QDialog>
 #include <QRegularExpression>
 #include "sol/sol.hpp"
 #include "header/keyaction.h"
@@ -38,6 +40,8 @@ public:
     QString filepath;
     QString command;
     Type type = Type::Raw;
+signals:
+    void scriptError(QString error);
 private:
     sol::state lua;
     QVector<ScriptItem*> *script;

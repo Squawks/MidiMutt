@@ -5,6 +5,9 @@
 #include <QTimer>
 #include <QMap>
 #include <QJsonObject>
+#include <QLabel>
+#include <QMessageBox>
+#include <QLayout>
 #include "header/midihandler.h"
 #include "header/keyaction.h"
 #include "header/mouseaction.h"
@@ -67,6 +70,7 @@ private:
     int timesRepeated = 0;
     int previousVelocity = -1;
     QTimer *repeatExecTimer = new QTimer;
+    QMessageBox *errorDialog = new QMessageBox;
 };
 
 #endif // ACTION_H
