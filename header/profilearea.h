@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QFrame>
 #include <QLayout>
+#include <QTimer>
 #include <QScrollArea>
 #include <QGroupBox>
 #include <QLabel>
@@ -25,6 +26,7 @@ public:
     ProfileArea(QWidget *parent, MidiHandler *midiHandler);
     ~ProfileArea();
     void read();
+    void write();
     void makeDefaults();
     void setActive(ProfileFrame *f);
     void setActiveByIndex(int index);
@@ -37,7 +39,6 @@ public slots:
 private:
     QList<ProfileFrame*> list;
     ProfileFrame *newProfile(const QString &name = "Untitled");
-    void write();
     QWidget *frameInner;
     QVBoxLayout *innerLayout;
     QScrollArea *scrollArea;
