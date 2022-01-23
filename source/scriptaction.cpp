@@ -2,7 +2,6 @@
 
 ScriptAction::ScriptAction()
 {
-    lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::os, sol::lib::io, sol::lib::table, sol::lib::string);
     initializeLuaState();
 
     connect(&timer, &QTimer::timeout, this, &ScriptAction::execAndAdvanceScript);
@@ -89,13 +88,19 @@ void ScriptAction::loadFromRaw()
         loadedRawScript.clear();
         script = &loadedRawScript;
         initializeLuaState();
-        lua.safe_script(raw.toStdString());
-        timer.stop();
-        script = nullptr;
+        sol::protected_function_result result = lua.safe_script(raw.toStdString());
+        if (result.valid()) {
+            timer.stop();
+            script = nullptr;
+        }
+        else {
+            sol::error err = result;
+            emit scriptError("Lua Error:\n" + QString(err.what()));
+        }
     }
-    catch (sol::error &error)
+    catch (sol::error &err)
     {
-        qInfo() << error.what();
+        emit scriptError("Lua Error:\n" + QString(err.what()));
     }
 }
 
@@ -114,9 +119,9 @@ void ScriptAction::loadFromFile()
             timer.stop();
             script = nullptr;
         }
-        catch (sol::error &error)
+        catch (sol::error &err)
         {
-            qInfo() << error.what();
+            emit scriptError("Lua Error:\n" + QString(err.what()));
         }
     }
     else
@@ -128,6 +133,7 @@ void ScriptAction::loadFromFile()
 void ScriptAction::initializeLuaState()
 {
     lua = {};
+    lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::os, sol::lib::io, sol::lib::table, sol::lib::string);
     lua.script("key, mouse = {}, {}");
     lua["key"]["press"] = [this](std::string key){
         addKeyToScript(key, KeyAction::Type::Press);
@@ -143,23 +149,23 @@ void ScriptAction::initializeLuaState()
     };
     lua["mouse"]["click"] = sol::overload(
                 [this](int button){ addMouseToScript(button, MouseAction::Type::Click); },
-                [this](int button, int x, int y){ addMouseToScript(button, MouseAction::Type::Click, x, y); }
+    [this](int button, int x, int y){ addMouseToScript(button, MouseAction::Type::Click, x, y); }
     );
     lua["mouse"]["hold"] = sol::overload(
                 [this](int button){ addMouseToScript(button, MouseAction::Type::HoldClick); },
-                [this](int button, int x, int y){ addMouseToScript(button, MouseAction::Type::HoldClick, x, y); }
+    [this](int button, int x, int y){ addMouseToScript(button, MouseAction::Type::HoldClick, x, y); }
     );
     lua["mouse"]["release"] = sol::overload(
                 [this](int button){ addMouseToScript(button, MouseAction::Type::ReleaseClick); },
-                [this](int button, int x, int y){ addMouseToScript(button, MouseAction::Type::ReleaseClick, x, y); }
+    [this](int button, int x, int y){ addMouseToScript(button, MouseAction::Type::ReleaseClick, x, y); }
     );
     lua["mouse"]["scroll"] = sol::overload(
                 [this](int scrollDir, int scrollAmount){ addMouseToScript(scrollDir, scrollAmount, MouseAction::Type::Scroll); },
-                [this](int scrollDir, int scrollAmount, int x, int y){ addMouseToScript(scrollDir, scrollAmount, MouseAction::Type::Scroll, x, y); }
+    [this](int scrollDir, int scrollAmount, int x, int y){ addMouseToScript(scrollDir, scrollAmount, MouseAction::Type::Scroll, x, y); }
     );
     lua["mouse"]["move"] = sol::overload(
                 [this](int dx, int dy){ addMouseToScript(dx, dy, MouseAction::Type::Move); },
-                [this](int dx, int dy, int x, int y){ addMouseToScript(dx, dy, MouseAction::Type::Move, x, y); }
+    [this](int dx, int dy, int x, int y){ addMouseToScript(dx, dy, MouseAction::Type::Move, x, y); }
     );
     lua["wait"] = [this](int delay){ addDelayToScript(delay); };
 }

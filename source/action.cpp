@@ -13,6 +13,11 @@ Action::Action()
         execute();
         if (repeatMode == RepeatMode::Times) timesRepeated++;
     });
+    errorDialog->setIcon(QMessageBox::Icon::Critical);
+    connect(&scriptAction, &ScriptAction::scriptError, [=](QString err){
+        errorDialog->setText(err);
+        errorDialog->exec();
+    });
 }
 
 Action::~Action()
