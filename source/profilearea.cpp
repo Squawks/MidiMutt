@@ -83,10 +83,10 @@ void ProfileArea::read()
         QJsonDocument jsonDocument = QJsonDocument::fromJson(profileFile.readAll());
         profileFile.close();
         QJsonObject json = jsonDocument.object();
-        QVector<QJsonObject> orderedProfiles{};
+        QMap<int, QJsonObject> orderedProfiles{};
         for (QString id : json.keys())
         {
-            orderedProfiles.insert(id.toInt(), json[id].toObject());
+            orderedProfiles[id.toInt()] = json[id].toObject();
         }
         for (QJsonObject p : orderedProfiles)
         {

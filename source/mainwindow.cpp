@@ -54,10 +54,14 @@ void MainWindow::setupMenuActions()
 void MainWindow::setupMenuBar()
 {
     fileMenu = new QMenu("File");
+    QAction *saveAction = new QAction("Save changes");
     QAction *newProfileAction = new QAction("New profile");
     QAction *newActionAction = new QAction("New action");
+    connect(saveAction, &QAction::triggered, profileArea, &ProfileArea::write);
     connect(newProfileAction, &QAction::triggered, profileArea->newProfileButton, &QPushButton::click);
     connect(newActionAction, &QAction::triggered, actionArea->newActionButton, &QPushButton::click);
+    fileMenu->addAction(saveAction);
+    fileMenu->addSeparator();
     fileMenu->addAction(newProfileAction);
     fileMenu->addAction(newActionAction);
     fileMenu->addSeparator();
